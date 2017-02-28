@@ -1,6 +1,7 @@
 package com.github.liurui.javaci.rpc.server;
 
 
+import com.github.liurui.javaci.rpc.RpcConfig;
 import com.github.liurui.javaci.rpc.servicecentre.ServicePublisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ public class DefaultRpcServer implements RpcServer {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private ServerConfiguration serverConfiguration;
+    private RpcConfig rpcConfig;
 
     @Autowired
     private ServicePublisher servicePublisher;
@@ -65,13 +66,13 @@ public class DefaultRpcServer implements RpcServer {
         Constructor constructor = processorClass.getConstructor(ifaceClass);
         Object faceImpl = applicationContext.getBean(ifaceClass);
         TProcessor processor = (TProcessor) constructor.newInstance(faceImpl);
-        TServerSocket serverTransport = new TServerSocket(serverConfiguration.port, clientTimeoutDefault);
+        TServerSocket serverTransport = new TServerSocket(rpcConfig.getServer().getPort(), clientTimeoutDefault);
         TCompactProtocol.Factory protFactory = new TCompactProtocol.Factory();
         TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
         args.processor(processor);
         args.protocolFactory(protFactory);
         server = new TThreadPoolServer(args);
-        logger.info(String.format("启动Rpc服务器 端口：%d", serverConfiguration.port));
+        logger.info(String.format("启动Rpc服务器 端口：%d", rpcConfig.getServer().getPort()));
         try {
             server.serve();
         } finally {
@@ -80,11 +81,11 @@ public class DefaultRpcServer implements RpcServer {
     }
 
     private void publish() {
-        if (StringUtils.isEmpty(serverConfiguration.publishRespositoryServer)) return;
+        if (StringUtils.isEmpty(rpcConfig.getServer().getServiceCentre().getRespositoryServer())) return;
         _published = true;
-        servicePublisher.init(serverConfiguration.publishRespositoryServer,
-                serverConfiguration.publishName,
-                serverConfiguration.publishServer + ":" + serverConfiguration.port);
+        servicePublisher.init(rpcConfig.getServer().getServiceCentre().getRespositoryServer(),
+                rpcConfig.getServer().getServiceCentre().getName(),
+                rpcConfig.getServer().getServiceCentre().getServer() + ":" + rpcConfig.getServer().getPort());
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

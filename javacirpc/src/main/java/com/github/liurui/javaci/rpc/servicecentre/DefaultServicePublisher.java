@@ -20,10 +20,10 @@ public class DefaultServicePublisher implements ServicePublisher {
     private static final int Timeout = 10 * 1000;
     private ZooKeeper zooKeeper;
     private String respository;
-    private String _path;
+    private String directory;
     private String dataPath;
-    private boolean _running;
-    private Watcher watcher = new Watcher() {
+    private boolean running;
+    private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
             logger.trace(String.format("ZooKeeper 状态发生更改 服务中心地址：%s event.type:%s event.state:%s", respository, event.getType(), event.getState()));
@@ -49,27 +49,27 @@ public class DefaultServicePublisher implements ServicePublisher {
     public void init(String respository, String path, String data) {
         this.respository = respository;
         if (StringUtils.isEmpty(path) || path.charAt(0) != '/')
-            _path = '/' + path;
+            directory = '/' + path;
         else
-            _path = path;
+            directory = path;
 
-        dataPath = _path.charAt(_path.length() - 1) == '/' ? _path.concat(data) : _path.concat("/").concat(data);
+        dataPath = directory.charAt(directory.length() - 1) == '/' ? directory.concat(data) : directory.concat("/").concat(data);
     }
 
     public void publish() {
-        _running = true;
+        running = true;
         startRepair();
     }
 
     public void cancel() {
-        _running = false;
+        running = false;
     }
 
 
     private void startRepair() {
         Thread thread = new Thread(() -> {
             logger.trace(String.format("RPC服务中心%s断开连接，尝试连接", respository));
-            while (_running) {
+            while (running) {
                 try {
                     repairProcess();
                     break;
@@ -103,7 +103,7 @@ public class DefaultServicePublisher implements ServicePublisher {
             if (zooKeeper == null)
                 create();
 
-            mkdirs(_path);
+            mkdirs(directory);
             zooKeeper.create(dataPath, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
 
             validateExistPath();
