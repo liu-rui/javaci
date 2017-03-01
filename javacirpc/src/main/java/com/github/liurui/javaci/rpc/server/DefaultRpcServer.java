@@ -61,8 +61,8 @@ public class DefaultRpcServer implements RpcServer {
 
     public <T> void runPrivate(Class<T> action) throws ClassNotFoundException, NoSuchMethodException, TTransportException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
-        Class ifaceClass = Class.forName(action.getTypeName() + "$Iface");
-        Class processorClass = Class.forName(action.getTypeName() + "$Processor");
+        Class ifaceClass = Class.forName(action.getTypeName());
+        Class processorClass = Class.forName(action.getTypeName().substring(0,action.getTypeName().lastIndexOf('$')) + "$Processor");
         Constructor constructor = processorClass.getConstructor(ifaceClass);
         Object faceImpl = applicationContext.getBean(ifaceClass);
         TProcessor processor = (TProcessor) constructor.newInstance(faceImpl);
@@ -81,7 +81,8 @@ public class DefaultRpcServer implements RpcServer {
     }
 
     private void publish() {
-        if (StringUtils.isEmpty(rpcConfig.getServer().getServiceCentre().getRespositoryServer())) return;
+        if (rpcConfig.getServer().getServiceCentre()  == null ||
+                StringUtils.isEmpty(rpcConfig.getServer().getServiceCentre().getRespositoryServer())) return;
         _published = true;
         servicePublisher.init(rpcConfig.getServer().getServiceCentre().getRespositoryServer(),
                 rpcConfig.getServer().getServiceCentre().getName(),

@@ -18,8 +18,8 @@ public class RpcClient implements AutoCloseable {
     private final RpcClientContainer rpcClientContainer;
     private final Object client;
 
-    public RpcClient(RpcClientContainer clientSocketContainer, TSocket socket, String clientType) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        Class<?> clientClass = Class.forName(clientType);
+    public RpcClient(RpcClientContainer clientSocketContainer, TSocket socket, String contactType) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        Class<?> clientClass = Class.forName(contactType.substring(0,contactType.lastIndexOf('$')) + "$Client");
         rpcClientContainer = clientSocketContainer;
         this.socket = socket;
         TCompactProtocol protocol = new TCompactProtocol(this.socket);

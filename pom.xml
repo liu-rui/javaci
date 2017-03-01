@@ -7,10 +7,18 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.1.RELEASE</version>
     </parent>
+    <properties>
+        <javaci.version>1.0-SNAPSHOT</javaci.version>
+        <java.version>1.8</java.version>
+        <junit.version>4.12</junit.version>
+        <spring-boot.version>1.5.1.RELEASE</spring-boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.liurui.javaci</groupId>
     <artifactId>javaci</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${javaci.version}</version>
     <packaging>pom</packaging>
     <url>https://github.com/liu-rui/javaci</url>
     <modules>
@@ -18,14 +26,8 @@
         <module>javacicore</module>
         <module>javacirpc</module>
         <module>javacicache</module>
+        <module>demo/javacirpcdemo</module>
     </modules>
-    <properties>
-        <jdk.version>1.8</jdk.version>
-        <junit.version>4.12</junit.version>
-        <spring-boot.version>1.5.1.RELEASE</spring-boot.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -33,28 +35,55 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-core</artifactId>
-                <version>${project.version}</version>
+                <version>${javaci.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-rpc</artifactId>
-                <version>${project.version}</version>
+                <version>${javaci.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-cache</artifactId>
-                <version>${project.version}</version>
+                <version>${javaci.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-web</artifactId>
-                <version>${project.version}</version>
+                <version>${javaci.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -65,8 +94,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-            <source>${jdk.version}</source>
-            <target>${jdk.version}</target>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
             <encoding>UTF-8</encoding>
             <showWarnings>true</showWarnings>
         </configuration>

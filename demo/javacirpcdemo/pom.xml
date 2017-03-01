@@ -4,21 +4,26 @@
         <artifactId>javaci</artifactId>
         <groupId>com.github.liurui.javaci</groupId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>javaci-cache</artifactId>
+
+    <artifactId>javaci-rpc-demo</artifactId>
+    <packaging>jar</packaging>
+
+    <name>javaci-rpc-demo</name>
+    <url>http://maven.apache.org</url>
+
     <properties>
-        <jedis.version>2.9.0</jedis.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <dependency>
-            <groupId>com.github.liurui.javaci</groupId>
-            <artifactId>javaci-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>${jedis.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

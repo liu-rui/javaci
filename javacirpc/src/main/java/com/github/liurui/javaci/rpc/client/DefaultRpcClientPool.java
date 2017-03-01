@@ -47,6 +47,8 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
             serviceFinder = applicationContext.getBean("serviceCentre", ServiceFinder.class);
         else
             throw new OperationNotSupportedException("");
+
+        serviceFinder.init(clientConfig);
     }
 
     public RpcClient Get() throws TimeoutException {
@@ -59,8 +61,13 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
             if (result != null)
                 return result;
 
+//            try {
+//                this.wait(4000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             try {
-                this.wait(4000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -147,6 +154,6 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
             if (clientSocket.isOpen())
                 _idleRpcClients.push(clientSocket);
         }
-        this.notifyAll();
+//        this.notifyAll();
     }
 }
