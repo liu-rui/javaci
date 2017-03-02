@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.github.liurui.javaci.rpc.autoconfiguration.RpcManualTypeConfiguration,\
+com.github.liurui.javaci.rpc.autoconfiguration.RpcConfiguration
