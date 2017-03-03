@@ -3,14 +3,14 @@ package com.github.liurui.javaci.rpc.server;
 
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.github.liurui.javaci.rpc.servicecentre.ServicePublisher;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @Component
 public class DefaultRpcServer implements RpcServer {
-    private static final Log logger = LogFactory.getLog(DefaultRpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultRpcServer.class);
     private static final int clientTimeoutDefault = 5 * 60 * 1000;
     private boolean _published = false;
 
@@ -47,16 +47,31 @@ public class DefaultRpcServer implements RpcServer {
         publishThread.start();
 
 
-        Thread rpcServerThread = new Thread(() -> {
-            try {
-                runPrivate(action);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        rpcServerThread.setDaemon(true);
-        rpcServerThread.start();
+        try {
+            runPrivate(action);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+//        Thread rpcServerThread = new Thread(() -> {
+//            try {
+//                runPrivate(action);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//
+//        rpcServerThread.setDaemon(true);
+//        rpcServerThread.start();
     }
 
     public <T> void runPrivate(Class<T> action) throws ClassNotFoundException, NoSuchMethodException, TTransportException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -72,7 +87,7 @@ public class DefaultRpcServer implements RpcServer {
         args.processor(processor);
         args.protocolFactory(protFactory);
         server = new TThreadPoolServer(args);
-        logger.info(String.format("启动Rpc服务器 端口：%d", rpcConfig.getServer().getPort()));
+        logger.info("启动Rpc服务器 端口：{}", rpcConfig.getServer().getPort());
         try {
             server.serve();
         } finally {

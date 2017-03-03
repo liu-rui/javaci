@@ -3,8 +3,8 @@ package com.github.liurui.javaci.rpc.client;
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.github.liurui.javaci.rpc.servicecentre.FindService;
 import com.google.common.net.HostAndPort;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +22,7 @@ import java.util.Random;
 @Component("serviceCentre")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ServiceCentreServiceFinder implements ServiceFinder {
-    private static final Log logger = LogFactory.getLog(ServiceCentreServiceFinder.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceCentreServiceFinder.class);
     private RpcConfig.ClientConfig clientConfig;
     private final List<String> services = new ArrayList<>();
     private int index = -1;

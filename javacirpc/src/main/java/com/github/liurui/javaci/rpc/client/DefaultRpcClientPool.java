@@ -3,9 +3,9 @@ package com.github.liurui.javaci.rpc.client;
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.google.common.base.Stopwatch;
 import com.google.common.net.HostAndPort;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.transport.TSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 @Component()
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
-    private static final Log logger = LogFactory.getLog(DefaultRpcClientPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultRpcClientPool.class);
     private static final int MaxConnectionCount = 10;
     private static final int GetTimeout = 30 * 1000;
     private final Stack<RpcClient> _idleRpcClients = new Stack<>();
@@ -91,9 +91,9 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
 
             if (ret != null)
                 _usingRpcClients.add(ret);
-            logger.trace(String.format("RPC接口类型[%s],正在使用的连接数为%s",
+            logger.trace("RPC接口类型[{}],正在使用的连接数为{}",
                     clientConfig.getContract(),
-                    _usingRpcClients.size()));
+                    _usingRpcClients.size());
             return ret;
         }
     }

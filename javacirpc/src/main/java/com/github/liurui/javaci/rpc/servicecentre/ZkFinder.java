@@ -1,11 +1,11 @@
 package com.github.liurui.javaci.rpc.servicecentre;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ZkFinder implements Finder {
-    private static final Log logger = LogFactory.getLog(DefaultServicePublisher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultServicePublisher.class);
     private static final int RepairInterval = 2 * 60 * 1000;
     private static final int Timeout = 10 * 1000;
     private final ConcurrentHashMap<String, ServiceListChanged> actions = new ConcurrentHashMap<String, ServiceListChanged>();
@@ -32,11 +32,11 @@ public class ZkFinder implements Finder {
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
-            logger.trace(String.format("ZooKeeper 状态发生更改 RPC路径：%s 服务中心地址：%s event.type:%s event.state:%s",
+            logger.trace("ZooKeeper 状态发生更改 RPC路径：{} 服务中心地址：{} event.type:{} event.state:{}",
                     event.getPath(),
                     respository,
                     event.getType(),
-                    event.getState()));
+                    event.getState());
 
             switch (event.getState()) {
                 case Disconnected:
@@ -96,7 +96,7 @@ public class ZkFinder implements Finder {
     private void StartRepair() {
         Thread thread = new Thread(() ->
         {
-            logger.trace(String.format("RPC服务中心%s断开连接，尝试连接", respository));
+            logger.trace("RPC服务中心{}断开连接，尝试连接", respository);
 
             while (true) {
                 try {
@@ -111,7 +111,7 @@ public class ZkFinder implements Finder {
                     }
                 }
             }
-            logger.trace(String.format("已与RPC服务中心%s建立连接", respository));
+            logger.trace("已与RPC服务中心{}建立连接", respository);
         });
 
         thread.setDaemon(true);
@@ -122,7 +122,7 @@ public class ZkFinder implements Finder {
         List<String> data = zooKeeper.getChildren(path, watcher);
         if (data == null) data = new ArrayList<>();
 
-        logger.trace(String.format("RPC路径%s发现有新的服务器列表,服务器列表为：%s", path, String.join(",", data)));
+        logger.trace("RPC路径%s发现有新的服务器列表,服务器列表为：{}", path, String.join(",", data));
 
         if (!data.isEmpty())
             action.on(data);

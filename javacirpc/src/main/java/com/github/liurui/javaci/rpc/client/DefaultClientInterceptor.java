@@ -2,8 +2,8 @@ package com.github.liurui.javaci.rpc.client;
 
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.google.common.base.Stopwatch;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DefaultClientInterceptor implements ClientInterceptor {
-    private static final Log logger = LogFactory.getLog(DefaultRpcClientPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultRpcClientPool.class);
 
     @Autowired
     private RpcClientPool rpcClientPool;
@@ -38,9 +38,9 @@ public class DefaultClientInterceptor implements ClientInterceptor {
             ret = method.invoke(rpcClient.getClient(), args);
         } finally {
             stopwatch.stop();
-            logger.info(String.format("调用RPC方法%s.%s用时%s毫秒", clientConfig.getContract(),
+            logger.info("调用RPC方法{}.{}用时{}毫秒", clientConfig.getContract(),
                     method.getName(),
-                    stopwatch.elapsed(TimeUnit.MILLISECONDS)));
+                    stopwatch.elapsed(TimeUnit.MILLISECONDS));
         }
         return ret;
     }

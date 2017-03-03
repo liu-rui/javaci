@@ -1,8 +1,8 @@
 package com.github.liurui.javaci.rpc.servicecentre;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -15,7 +15,7 @@ import java.time.Duration;
  */
 @Component
 public class DefaultServicePublisher implements ServicePublisher {
-    private static final Log logger = LogFactory.getLog(DefaultServicePublisher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultServicePublisher.class);
     private static final long RepairInterval = 10 * 1000;
     private static final int Timeout = 10 * 1000;
     private ZooKeeper zooKeeper;
@@ -26,7 +26,7 @@ public class DefaultServicePublisher implements ServicePublisher {
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
-            logger.trace(String.format("ZooKeeper 状态发生更改 服务中心地址：%s event.type:%s event.state:%s", respository, event.getType(), event.getState()));
+            logger.trace("ZooKeeper 状态发生更改 服务中心地址：{} event.type:{} event.state:{}", respository, event.getType(), event.getState());
 
             switch (event.getState()) {
                 case Disconnected:
@@ -68,7 +68,7 @@ public class DefaultServicePublisher implements ServicePublisher {
 
     private void startRepair() {
         Thread thread = new Thread(() -> {
-            logger.trace(String.format("RPC服务中心%s断开连接，尝试连接", respository));
+            logger.trace("RPC服务中心{}断开连接，尝试连接", respository);
             while (running) {
                 try {
                     repairProcess();
@@ -82,7 +82,7 @@ public class DefaultServicePublisher implements ServicePublisher {
                     }
                 }
             }
-            logger.trace(String.format("已与RPC服务中心%s建立连接", respository));
+            logger.trace("已与RPC服务中心{}建立连接", respository);
         });
 
         thread.setDaemon(true);

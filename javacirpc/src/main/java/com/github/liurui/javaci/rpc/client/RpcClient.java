@@ -1,10 +1,10 @@
 package com.github.liurui.javaci.rpc.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  * Created by liurui on 17-2-28.
  */
 public class RpcClient implements AutoCloseable {
-    private static final Log logger = LogFactory.getLog(DefaultRpcClientPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultRpcClientPool.class);
     private final TSocket socket;
     private final RpcClientContainer rpcClientContainer;
     private final Object client;
