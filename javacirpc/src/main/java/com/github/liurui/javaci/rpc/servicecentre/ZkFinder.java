@@ -32,7 +32,7 @@ public class ZkFinder implements Finder {
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
-            logger.trace("ZooKeeper 状态发生更改 RPC路径：{} 服务中心地址：{} event.type:{} event.state:{}",
+            logger.info("ZooKeeper 状态发生更改 RPC路径：{} 服务中心地址：{} event.type:{} event.state:{}",
                     event.getPath(),
                     respository,
                     event.getType(),
@@ -96,7 +96,7 @@ public class ZkFinder implements Finder {
     private void StartRepair() {
         Thread thread = new Thread(() ->
         {
-            logger.trace("RPC服务中心{}断开连接，尝试连接", respository);
+            logger.info("RPC服务中心{}断开连接，尝试连接", respository);
 
             while (true) {
                 try {
@@ -111,7 +111,7 @@ public class ZkFinder implements Finder {
                     }
                 }
             }
-            logger.trace("已与RPC服务中心{}建立连接", respository);
+            logger.info("已与RPC服务中心{}建立连接", respository);
         });
 
         thread.setDaemon(true);
@@ -122,7 +122,7 @@ public class ZkFinder implements Finder {
         List<String> data = zooKeeper.getChildren(path, watcher);
         if (data == null) data = new ArrayList<>();
 
-        logger.trace("RPC路径%s发现有新的服务器列表,服务器列表为：{}", path, String.join(",", data));
+        logger.info("RPC路径{}发现有新的服务器列表,服务器列表为：{}", path, String.join(",", data));
 
         if (!data.isEmpty())
             action.on(data);
@@ -177,7 +177,7 @@ public class ZkFinder implements Finder {
 
 
     private void Create() throws IOException, TimeoutException {
-        zooKeeper = new ZooKeeper(respository, Timeout, null);
+        zooKeeper = new ZooKeeper(respository, Timeout, (e)->{});
         int max = 10;
 
         while (!zooKeeper.getState().equals(ZooKeeper.States.CONNECTED) && max-- > 1) {

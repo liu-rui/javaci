@@ -49,7 +49,7 @@ public class RpcManualTypeConfiguration {
             Object proxy = Proxy.newProxyInstance(face.getClassLoader(), new Class<?>[]{face}, clientInterceptor);
 
             beanFactory.registerSingleton(clientConfig.getContract(), proxy);
-            logger.trace("注册rpc客户端代理,接口为{}", clientConfig.getContract());
+            logger.info("注册rpc客户端代理,接口为{}", clientConfig.getContract());
         });
     }
 }

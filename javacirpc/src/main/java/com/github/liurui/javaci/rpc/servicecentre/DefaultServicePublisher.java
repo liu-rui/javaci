@@ -26,7 +26,7 @@ public class DefaultServicePublisher implements ServicePublisher {
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
-            logger.trace("ZooKeeper 状态发生更改 服务中心地址：{} event.type:{} event.state:{}", respository, event.getType(), event.getState());
+            logger.info("ZooKeeper 状态发生更改 服务中心地址：{} event.type:{} event.state:{}", respository, event.getType(), event.getState());
 
             switch (event.getState()) {
                 case Disconnected:
@@ -68,7 +68,7 @@ public class DefaultServicePublisher implements ServicePublisher {
 
     private void startRepair() {
         Thread thread = new Thread(() -> {
-            logger.trace("RPC服务中心{}断开连接，尝试连接", respository);
+            logger.info("RPC服务中心{}断开连接，尝试连接", respository);
             while (running) {
                 try {
                     repairProcess();
@@ -82,7 +82,7 @@ public class DefaultServicePublisher implements ServicePublisher {
                     }
                 }
             }
-            logger.trace("已与RPC服务中心{}建立连接", respository);
+            logger.info("已与RPC服务中心{}建立连接", respository);
         });
 
         thread.setDaemon(true);
@@ -156,7 +156,7 @@ public class DefaultServicePublisher implements ServicePublisher {
     }
 
     private void create() throws IOException, InterruptedException {
-        zooKeeper = new ZooKeeper(respository, Timeout, null);
+        zooKeeper = new ZooKeeper(respository, Timeout,(e)->{});
         int max = 10;
 
         while (!zooKeeper.getState().equals(ZooKeeper.States.CONNECTED) && max-- > 1) {

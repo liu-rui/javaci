@@ -91,7 +91,7 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
 
             if (ret != null)
                 _usingRpcClients.add(ret);
-            logger.trace("RPC接口类型[{}],正在使用的连接数为{}",
+            logger.info("RPC接口类型[{}],正在使用的连接数为{}",
                     clientConfig.getContract(),
                     _usingRpcClients.size());
             return ret;
@@ -151,8 +151,9 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
         synchronized (this) {
             _usingRpcClients.remove(clientSocket);
 
-            if (clientSocket.isOpen())
+            if (clientSocket.isOpen()) {
                 _idleRpcClients.push(clientSocket);
+            }
         }
 //        this.notifyAll();
     }

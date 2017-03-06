@@ -36,6 +36,7 @@ public class RpcClient implements AutoCloseable {
     }
 
     public void relase(){
+        socket.close();
     }
 
     @Override
