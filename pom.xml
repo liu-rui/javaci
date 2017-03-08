@@ -44,8 +44,8 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>janino</artifactId>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -88,19 +88,19 @@
         </dependencies>
     </dependencyManagement>
     <build>
-    <plugins>
-    <!-- Compiler 插件, 设定JDK版本 -->
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-            <encoding>UTF-8</encoding>
-            <showWarnings>true</showWarnings>
-        </configuration>
-    </plugin>
-    </plugins>
+        <plugins>
+            <!-- Compiler 插件, 设定JDK版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
