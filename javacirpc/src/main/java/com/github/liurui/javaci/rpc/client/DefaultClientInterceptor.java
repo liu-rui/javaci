@@ -1,5 +1,6 @@
 package com.github.liurui.javaci.rpc.client;
 
+import com.github.liurui.javaci.core.Guard;
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.google.common.base.Stopwatch;
 import org.apache.thrift.transport.TTransportException;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
@@ -34,21 +34,25 @@ public class DefaultClientInterceptor implements ClientInterceptor {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        Object ret = null;
+        Object ret;
 
-        try (RpcClient rpcClient = rpcClientPool.Get()) {
-            try {
-                ret = method.invoke(rpcClient.getClient(), args);
-            }catch (InvocationTargetException e){
-                Throwable cause = e.getCause();
-                if(cause != null &&  cause instanceof TTransportException){
-                    rpcClient.relase();
-                }else{
-                    throw  e;
+        try {
+            ret = Guard.tryDo(5 , 500 , ()->{
+                try (RpcClient rpcClient = rpcClientPool.Get()) {
+                    try {
+                        Object r =  method.invoke(rpcClient.getClient(), args);
+                        logger.info("返回的结果为{}",r);
+                        return r;
+                    } catch (Exception e) {
+                        Throwable cause = e.getCause();
+                        if (cause != null && cause instanceof TTransportException) {
+                            rpcClient.relase();
+                        }
+                        throw e;
+                    }
                 }
-            }
-        }
-        finally {
+            });
+        } finally {
             stopwatch.stop();
             logger.info("调用RPC方法{}.{}用时{}毫秒", clientConfig.getContract(),
                     method.getName(),

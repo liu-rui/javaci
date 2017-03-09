@@ -1,5 +1,6 @@
 package com.github.liurui.javaci.rpc.client;
 
+import com.github.liurui.javaci.core.Guard;
 import com.github.liurui.javaci.rpc.RpcConfig;
 import com.google.common.base.Stopwatch;
 import com.google.common.net.HostAndPort;
@@ -132,9 +133,12 @@ public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
             TSocket socket = new TSocket(address.getHost(), address.getPort(), 20000);
 
             try {
-                socket.open();
+                Guard.tryDo(2, 500, () -> {
+                    socket.open();
+                    return null;
+                });
                 return new RpcClient(this, socket, clientConfig.getContract());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.error(String.format("RPC接口类型[%s],rpc尝试连接时出现异常,rpc服务器地址为%s",
                         clientConfig.getContract(),
                         address), e);
