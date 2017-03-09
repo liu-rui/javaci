@@ -37,12 +37,10 @@ public class DefaultClientInterceptor implements ClientInterceptor {
         Object ret;
 
         try {
-            ret = Guard.tryDo(5 , 500 , ()->{
+            ret = Guard.tryDo(5, 500, () -> {
                 try (RpcClient rpcClient = rpcClientPool.Get()) {
                     try {
-                        Object r =  method.invoke(rpcClient.getClient(), args);
-                        logger.info("返回的结果为{}",r);
-                        return r;
+                        return method.invoke(rpcClient.getClient(), args);
                     } catch (Exception e) {
                         Throwable cause = e.getCause();
                         if (cause != null && cause instanceof TTransportException) {
