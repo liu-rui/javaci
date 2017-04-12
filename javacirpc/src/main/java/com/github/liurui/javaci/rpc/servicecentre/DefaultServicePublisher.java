@@ -159,7 +159,7 @@ public class DefaultServicePublisher implements ServicePublisher {
         else
             message = String.format("RPC zookeeper注册节点时出现异常，地址为:%s ", respository);
 
-        logger.error(message, ex);
+        logger.trace(message +  ex.toString());
         return message;
     }
 
