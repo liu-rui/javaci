@@ -35,6 +35,12 @@ public class DefaultServicePublisher implements ServicePublisher {
                 case NoSyncConnected:
                     startRepair();
                     return;
+                case SyncConnected:
+                    if (event.getType() == Event.EventType.NodeDeleted) {
+                        startRepair();
+                        return;
+                    }
+                    break;
             }
 
             try {
@@ -90,8 +96,10 @@ public class DefaultServicePublisher implements ServicePublisher {
     }
 
     private void repairProcess() throws ConnectException {
-        if (zooKeeper != null && !zooKeeper.getState().isAlive()) {
-            close();
+        if (zooKeeper != null) {
+            if (!zooKeeper.getState().isAlive())
+                close();
+
             try {
                 Thread.sleep(Duration.ofMinutes(2).toMillis());
             } catch (InterruptedException e) {
@@ -151,12 +159,13 @@ public class DefaultServicePublisher implements ServicePublisher {
         else
             message = String.format("RPC zookeeper注册节点时出现异常，地址为:%s ", respository);
 
-        logger.trace(message + ex.toString());
+        logger.error(message, ex);
         return message;
     }
 
     private void create() throws IOException, InterruptedException {
-        zooKeeper = new ZooKeeper(respository, Timeout,(e)->{});
+        zooKeeper = new ZooKeeper(respository, Timeout, (e) -> {
+        });
         int max = 10;
 
         while (!zooKeeper.getState().equals(ZooKeeper.States.CONNECTED) && max-- > 1) {
