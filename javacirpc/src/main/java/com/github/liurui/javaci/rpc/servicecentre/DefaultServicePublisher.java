@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.time.Duration;
 
 /**
  * Created by liurui on 17-2-27.
@@ -101,7 +100,7 @@ public class DefaultServicePublisher implements ServicePublisher {
                 close();
 
             try {
-                Thread.sleep(Duration.ofMinutes(2).toMillis());
+                Thread.sleep(2 * 60 * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
