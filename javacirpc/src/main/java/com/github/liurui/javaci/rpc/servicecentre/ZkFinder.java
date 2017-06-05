@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -29,6 +30,8 @@ public class ZkFinder implements Finder {
     private final ConcurrentHashMap<String, ServiceListChanged> actions = new ConcurrentHashMap<String, ServiceListChanged>();
     private ZooKeeper zooKeeper;
     private String respository;
+    final Semaphore semaphore = new Semaphore(1, true);
+    Thread repairThread;
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
@@ -60,8 +63,9 @@ public class ZkFinder implements Finder {
 
     @Override
     public void init(String respository) {
-
         this.respository = respository;
+        createRepairThread();
+
         try {
             if (zooKeeper == null)
                 Create();
@@ -92,30 +96,51 @@ public class ZkFinder implements Finder {
         }
     }
 
-
     private void StartRepair() {
-        Thread thread = new Thread(() ->
-        {
-            logger.info("RPC服务中心{}断开连接，尝试连接", respository);
 
+    }
+
+    private void createRepairThread() {
+        repairThread = new Thread(() ->
+        {
             while (true) {
-                try {
-                    repairProcess();
-                    break;
-                } catch (Exception e) {
-                    Close();
+                int availablePermits = semaphore.availablePermits();
+
+                if (availablePermits > 0) {
                     try {
-                        Thread.sleep(RepairInterval);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
+                        semaphore.acquire(availablePermits);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
+
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }
+                logger.info("RPC服务中心{}断开连接，尝试连接", respository);
+
+                while (true) {
+                    try {
+                        repairProcess();
+                        break;
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        Close();
+                        try {
+                            Thread.sleep(RepairInterval);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+                logger.info("已与RPC服务中心{}建立连接", respository);
             }
-            logger.info("已与RPC服务中心{}建立连接", respository);
         });
 
-        thread.setDaemon(true);
-        thread.start();
+        repairThread.setDaemon(true);
+        repairThread.start();
     }
 
     private void getData(String path, ServiceListChanged action) throws KeeperException, InterruptedException {
@@ -165,19 +190,20 @@ public class ZkFinder implements Finder {
         String message;
 
         if (ex instanceof KeeperException.ConnectionLossException)
-            message = String.format("无法连接到服务中心，地址为:%s", respository);
+            message = String.format("无法连接到服务中心，地址为:%s %s", respository, ex.getMessage());
         else if (ex instanceof KeeperException.SessionExpiredException)
-            message = String.format("连接服务中心时发生超时，zookeeper地址为:%s", respository);
+            message = String.format("连接服务中心时发生超时，zookeeper地址为:%s  %s", respository, ex.getMessage());
         else
-            message = String.format("zookeeper获取节点数据出现异常，zookeeper地址为:%s ", respository);
+            message = String.format("zookeeper获取节点数据出现异常，zookeeper地址为:%s %s", respository, ex.getMessage());
 
-        logger.trace(message + ex.toString());
+        logger.error(message, ex);
         return message;
     }
 
 
     private void Create() throws IOException, TimeoutException {
-        zooKeeper = new ZooKeeper(respository, Timeout, (e)->{});
+        zooKeeper = new ZooKeeper(respository, Timeout, (e) -> {
+        });
         int max = 10;
 
         while (!zooKeeper.getState().equals(ZooKeeper.States.CONNECTED) && max-- > 1) {
@@ -189,7 +215,7 @@ public class ZkFinder implements Finder {
         }
 
         if (!zooKeeper.getState().equals(ZooKeeper.States.CONNECTED))
-                throw new TimeoutException(String.format("连接服务中心时发生超时，zookeeper地址为:%s", respository));
+            throw new TimeoutException(String.format("连接服务中心时发生超时，zookeeper地址为:%s", respository));
     }
 
     private void Close() {
@@ -197,9 +223,10 @@ public class ZkFinder implements Finder {
 
         try {
             zooKeeper.close();
-            zooKeeper = null;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } finally {
+            zooKeeper = null;
         }
     }
 }
