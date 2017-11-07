@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DefaultRpcClientPool implements RpcClientPool, RpcClientContainer {
     private static final Logger logger = LoggerFactory.getLogger(DefaultRpcClientPool.class);
-    private static final int MaxConnectionCount = 10;
+    private static final int MaxConnectionCount = 100;
     private static final int GetTimeout = 30 * 1000;
     private final Stack<RpcClient> _idleRpcClients = new Stack<>();
     private final List<RpcClient> _usingRpcClients = new ArrayList<>();
