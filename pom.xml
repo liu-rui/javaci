@@ -9,6 +9,7 @@
     </parent>
     <properties>
         <java.version>1.8</java.version>
+        <javac.version>2.0-SNAPSHOT</javac.version>
         <janino.version>3.0.6</janino.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -63,37 +64,37 @@
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-core</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-rpc</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-cache</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-data-mysql</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-web</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-web-tomcat-parent</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.liurui.javaci</groupId>
                 <artifactId>javaci-web-jetty-parent</artifactId>
-                <version>${project.version}</version>
+                <version>${javac.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
